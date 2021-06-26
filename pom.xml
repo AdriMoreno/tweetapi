@@ -16,6 +16,7 @@
 	<description>Twitter API for challenge</description>
 	<properties>
 		<java.version>16</java.version>
+		<twitter4j.version>4.0.7</twitter4j.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -36,7 +37,12 @@
 		<dependency>
 			<groupId>org.twitter4j</groupId>
 			<artifactId>twitter4j-core</artifactId>
-			<version>[4.0,)</version>
+			<version>${twitter4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.twitter4j</groupId>
+			<artifactId>twitter4j-stream</artifactId>
+			<version>${twitter4j.version}</version>
 		</dependency>
 	</dependencies>
 

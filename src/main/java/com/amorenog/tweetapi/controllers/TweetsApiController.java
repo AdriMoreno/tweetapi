@@ -19,7 +19,7 @@ public class TweetsApiController implements TweetsApi {
     @Autowired
     TweetsService tweetsService;
 
-    Logger logger = LoggerFactory.getLogger(TweetsApiController.class);
+    private static Logger logger = LoggerFactory.getLogger(TweetsApiController.class);
 
     @Override
     public ResponseEntity<List<Tweet>> getAllTweets() {

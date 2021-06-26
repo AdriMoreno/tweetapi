@@ -11,4 +11,6 @@ public interface TweetsService {
 
     public List<Tweet> getAllTweets();
 
+    void setTweetsListener();
+
 }
