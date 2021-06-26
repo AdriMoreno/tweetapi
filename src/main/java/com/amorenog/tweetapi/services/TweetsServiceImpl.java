@@ -12,6 +12,7 @@ public class TweetsServiceImpl implements TweetsService {
 
     @Override
     public List<Tweet> getAllTweets() {
+        // TODO: Add twitter4j listener for status.
         return new ArrayList<Tweet>();
     }
     
