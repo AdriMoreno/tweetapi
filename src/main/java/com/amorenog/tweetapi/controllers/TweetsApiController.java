@@ -23,5 +23,11 @@ public class TweetsApiController implements TweetsApi {
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public ResponseEntity<ApiMessage> addTweet(Tweet tweetToAdd) {
+        // TODO Auto-generated method stub
+        return null;
+    }
     
 }
