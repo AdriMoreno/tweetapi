@@ -20,9 +20,6 @@ public interface TweetsApi {
     @GetMapping
     ResponseEntity<List<Tweet>> getAllTweets();
 
-    @PostMapping
-    ResponseEntity<ApiMessage> addTweet(Tweet tweetToAdd);
-
     @PostMapping(value="/{id}")
     ResponseEntity<ApiMessage> validateTweet(@PathParam(value = "id") String id);
 }
