@@ -7,6 +7,9 @@ import com.amorenog.tweetapi.models.Tweet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import twitter4j.StallWarning;
@@ -20,20 +23,32 @@ import twitter4j.conf.ConfigurationBuilder;
 @Service
 public class TweetsServiceImpl implements TweetsService {
 
+    @Value("${twitter.api.consumer.token}")
+    private String consumerToken;
+    @Value("${twitter.api.consumer.secret}")
+    private String consumerSecret;
+    @Value("${twitter.api.access.token}")
+    private String accessToken;
+    @Value("${twitter.api.access.secret}")
+    private String accessSecret;
+
+    @Autowired
+    TwitterStream twitterStream;
+
     private static Logger logger = LoggerFactory.getLogger(TweetsServiceImpl.class);
+
     @Override
     public List<Tweet> getAllTweets() {
-        // TODO: Add twitter4j listener for status.
         return new ArrayList<Tweet>();
     }
 
-    @Override
-    public void setTweetsListener() {
-        ConfigurationBuilder cb = new ConfigurationBuilder();
-        cb.setDebugEnabled(true).setOAuthConsumerKey("").setOAuthConsumerSecret("").setOAuthAccessToken("")
-                .setOAuthAccessTokenSecret("");
-        TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
-        StatusListener listener = new StatusListener() {
+    @Bean
+    public TwitterStream getTweetStream() {
+        final ConfigurationBuilder cb = new ConfigurationBuilder();
+        cb.setDebugEnabled(true).setOAuthConsumerKey(consumerToken).setOAuthConsumerSecret(consumerSecret)
+                .setOAuthAccessToken(accessToken).setOAuthAccessTokenSecret(accessSecret);
+        final TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
+        final StatusListener listener = new StatusListener() {
             @Override
             public void onStatus(Status status) {
                 logger.info("@" + status.getUser().getScreenName() + " - " + status.getText());
@@ -64,8 +79,10 @@ public class TweetsServiceImpl implements TweetsService {
                 logger.error("Exception on StatusListener", ex);
             }
         };
+        logger.info("Listener created");
         twitterStream.addListener(listener);
         twitterStream.sample();
+        return twitterStream;
     }
 
 }

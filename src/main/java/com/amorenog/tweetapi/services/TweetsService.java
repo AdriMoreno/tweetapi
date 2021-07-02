@@ -10,7 +10,4 @@ import org.springframework.stereotype.Service;
 public interface TweetsService {
 
     public List<Tweet> getAllTweets();
-
-    void setTweetsListener();
-
 }
