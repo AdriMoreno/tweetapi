@@ -3,6 +3,7 @@ package com.amorenog.tweetapi.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.amorenog.tweetapi.listeners.CustomStatusListener;
 import com.amorenog.tweetapi.models.Tweet;
 
 import org.slf4j.Logger;
@@ -10,8 +11,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import twitter4j.FilterQuery;
 import twitter4j.StallWarning;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
@@ -31,6 +34,10 @@ public class TweetsServiceImpl implements TweetsService {
     private String accessToken;
     @Value("${twitter.api.access.secret}")
     private String accessSecret;
+    @Value("${filter.followers.threshold}")
+    private int followersThreshold;
+    @Value("${filter.languages}")
+    private String languages;
 
     @Autowired
     TwitterStream twitterStream;
@@ -48,39 +55,11 @@ public class TweetsServiceImpl implements TweetsService {
         cb.setDebugEnabled(true).setOAuthConsumerKey(consumerToken).setOAuthConsumerSecret(consumerSecret)
                 .setOAuthAccessToken(accessToken).setOAuthAccessTokenSecret(accessSecret);
         final TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
-        final StatusListener listener = new StatusListener() {
-            @Override
-            public void onStatus(Status status) {
-                logger.info("@" + status.getUser().getScreenName() + " - " + status.getText());
-            }
-
-            @Override
-            public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-                logger.info("Got a status deletion notice id:" + statusDeletionNotice.getStatusId());
-            }
-
-            @Override
-            public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-                logger.info("Got track limitation notice:" + numberOfLimitedStatuses);
-            }
-
-            @Override
-            public void onScrubGeo(long userId, long upToStatusId) {
-                logger.info("Got scrub_geo event userId:" + userId + " upToStatusId:" + upToStatusId);
-            }
-
-            @Override
-            public void onStallWarning(StallWarning warning) {
-                logger.info("Got stall warning:" + warning);
-            }
-
-            @Override
-            public void onException(Exception ex) {
-                logger.error("Exception on StatusListener", ex);
-            }
-        };
-        logger.info("Listener created");
+        final StatusListener listener = new CustomStatusListener(followersThreshold);
+        logger.info("Listener created with threshold: " + followersThreshold);
         twitterStream.addListener(listener);
+        // TODO This is like smelling flowers...
+        twitterStream.filter(new FilterQuery().language(languages.split(",")));
         twitterStream.sample();
         return twitterStream;
     }
