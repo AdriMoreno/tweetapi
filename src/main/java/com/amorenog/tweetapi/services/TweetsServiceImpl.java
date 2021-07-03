@@ -3,44 +3,25 @@ package com.amorenog.tweetapi.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.amorenog.tweetapi.listeners.CustomStatusListener;
 import com.amorenog.tweetapi.models.Tweet;
+import com.amorenog.tweetapi.repositories.TweetsRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
-import twitter4j.FilterQuery;
-import twitter4j.StallWarning;
-import twitter4j.Status;
-import twitter4j.StatusDeletionNotice;
-import twitter4j.StatusListener;
 import twitter4j.TwitterStream;
-import twitter4j.TwitterStreamFactory;
-import twitter4j.conf.ConfigurationBuilder;
 
 @Service
 public class TweetsServiceImpl implements TweetsService {
 
-    @Value("${twitter.api.consumer.token}")
-    private String consumerToken;
-    @Value("${twitter.api.consumer.secret}")
-    private String consumerSecret;
-    @Value("${twitter.api.access.token}")
-    private String accessToken;
-    @Value("${twitter.api.access.secret}")
-    private String accessSecret;
-    @Value("${filter.followers.threshold}")
-    private int followersThreshold;
-    @Value("${filter.languages}")
-    private String languages;
-
     @Autowired
     TwitterStream twitterStream;
+
+    @Autowired
+    TweetsRepository repo;
+
 
     private static Logger logger = LoggerFactory.getLogger(TweetsServiceImpl.class);
 
@@ -49,19 +30,9 @@ public class TweetsServiceImpl implements TweetsService {
         return new ArrayList<Tweet>();
     }
 
-    @Bean
-    public TwitterStream getTweetStream() {
-        final ConfigurationBuilder cb = new ConfigurationBuilder();
-        cb.setDebugEnabled(true).setOAuthConsumerKey(consumerToken).setOAuthConsumerSecret(consumerSecret)
-                .setOAuthAccessToken(accessToken).setOAuthAccessTokenSecret(accessSecret);
-        final TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
-        final StatusListener listener = new CustomStatusListener(followersThreshold);
-        logger.info("Listener created with threshold: " + followersThreshold);
-        twitterStream.addListener(listener);
-        // TODO This is like smelling flowers...
-        twitterStream.filter(new FilterQuery().language(languages.split(",")));
-        twitterStream.sample();
-        return twitterStream;
+    @Override
+    public Tweet save(Tweet tweet) {
+        return repo.save(tweet);
     }
 
 }

@@ -1,5 +1,7 @@
 package com.amorenog.tweetapi.listeners;
 
+import java.util.function.Consumer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,26 +15,30 @@ public class CustomStatusListener implements StatusListener {
 
     private int followersThreshold;
 
-    public CustomStatusListener(int followersThreshold) {
+    private Consumer<Status> statusConsumer;
+
+    public CustomStatusListener(int followersThreshold, Consumer<Status> consumer) {
         this.followersThreshold = followersThreshold;
+        this.statusConsumer = consumer.andThen(status -> logger.debug("Status with id: " + status.getId() + " saved"));
     }
 
     @Override
     public void onStatus(Status status) {
         if (status.getUser().getFollowersCount() > followersThreshold) {
-            logger.info("@" + status.getUser().getScreenName() + " - " + status.getText() + "Fol:"
-                    + status.getUser().getFollowersCount());
+            logger.info("@" + status.getUser().getScreenName() + " - " + status.getText() + "Lang:"
+                    + status.getLang());
+                    statusConsumer.accept(status);
         }
     }
 
     @Override
     public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-        logger.info("Got a status deletion notice id:" + statusDeletionNotice.getStatusId());
+        logger.debug("Got a status deletion notice id:" + statusDeletionNotice.getStatusId());
     }
 
     @Override
     public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-        logger.info("Got track limitation notice:" + numberOfLimitedStatuses);
+        logger.debug("Got track limitation notice:" + numberOfLimitedStatuses);
     }
 
     @Override
@@ -42,13 +48,11 @@ public class CustomStatusListener implements StatusListener {
 
     @Override
     public void onScrubGeo(long userId, long upToStatusId) {
-        // TODO Auto-generated method stub
-
+        logger.debug("On Scrub Geo - userId: " + userId + " upToStatusId" + upToStatusId);
     }
 
     @Override
     public void onStallWarning(StallWarning warning) {
-        // TODO Auto-generated method stub
-
+        logger.debug("On StallWarning: " + warning.getMessage());
     }
 }

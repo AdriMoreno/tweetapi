@@ -10,4 +10,6 @@ import org.springframework.stereotype.Service;
 public interface TweetsService {
 
     public List<Tweet> getAllTweets();
+
+    public Tweet save(Tweet tweet);
 }
