@@ -2,7 +2,7 @@ package com.amorenog.tweetapi;
 
 import com.amorenog.tweetapi.listeners.CustomStatusListener;
 import com.amorenog.tweetapi.services.TweetsService;
-import com.converters.StatusToTweetConverter;
+import com.amorenog.tweetapi.converters.StatusToTweetConverter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +46,8 @@ public class TweetApiConfiguration {
         cb.setDebugEnabled(true).setOAuthConsumerKey(consumerToken).setOAuthConsumerSecret(consumerSecret)
                 .setOAuthAccessToken(accessToken).setOAuthAccessTokenSecret(accessSecret);
         final TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
-        final StatusListener listener = new CustomStatusListener(followersThreshold,s -> service.save(converter.convertStatus(s)));
+        final StatusListener listener = new CustomStatusListener(followersThreshold,
+                s -> service.save(converter.convertStatus(s)));
         logger.info("Listener created with threshold: " + followersThreshold);
         twitterStream.addListener(listener);
         // TODO This is like smelling flowers...
@@ -56,7 +57,7 @@ public class TweetApiConfiguration {
     }
 
     @Bean
-    public StatusToTweetConverter getTweetConverter(){
+    public StatusToTweetConverter getTweetConverter() {
         return new StatusToTweetConverter();
     }
 

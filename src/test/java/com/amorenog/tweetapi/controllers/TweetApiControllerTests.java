@@ -1,26 +1,25 @@
-package com.amorenog.tweetapi;
+package com.amorenog.tweetapi.controllers;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import com.amorenog.tweetapi.controllers.TweetsApiController;
 import com.amorenog.tweetapi.models.Location;
 import com.amorenog.tweetapi.models.Tweet;
 import com.amorenog.tweetapi.models.User;
 import com.amorenog.tweetapi.services.TweetsServiceImpl;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.junit.jupiter.api.Assertions;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@SpringBootTest
-class TweetApiControllerTests {
-
+@ExtendWith(MockitoExtension.class)
+public class TweetApiControllerTests {
 	private User emptyUser;
 	private Location mockLocation;
 	private List<Tweet> mockTweetsList = new ArrayList<>(2);
@@ -31,7 +30,7 @@ class TweetApiControllerTests {
 	@Mock
 	TweetsServiceImpl tweetsService;
 
-	@Test
+	@BeforeEach
 	void contextLoads() {
 		emptyUser = new User();
 		mockLocation = new Location(0, 0);
@@ -45,10 +44,9 @@ class TweetApiControllerTests {
 		mockTweetsList.add(t2);	
 	}
 
-	@Test
+    @Test
 	void getAllTweets() {
 		when(tweetsService.getAllTweets()).thenAnswer(invocation -> mockTweetsList);
-		Assertions.assertEquals(mockTweetsList, tweetsApi.getAllTweets().getBody());
+		assertEquals(mockTweetsList, tweetsApi.getAllTweets().getBody());
 	}
-
 }

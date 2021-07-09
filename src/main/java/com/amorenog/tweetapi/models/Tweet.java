@@ -19,6 +19,7 @@ public class Tweet {
     @ManyToOne
     private User user;
     private String text;
+    private String language;
     private boolean validation;
 
 }
