@@ -1,5 +1,6 @@
 package com.amorenog.tweetapi;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.timeout;
@@ -12,10 +13,11 @@ import com.amorenog.tweetapi.models.User;
 import com.amorenog.tweetapi.repositories.TweetsRepository;
 import com.amorenog.tweetapi.services.TweetsServiceImpl;
 
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,6 +25,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 @SpringBootTest
 public class TweetsServiceTests {
+
+    static Logger log = LoggerFactory.getLogger(TweetsServiceTests.class);
 
     @MockBean
     TweetsRepository mockRepo;
@@ -52,11 +56,11 @@ public class TweetsServiceTests {
 
     @Test
     void filterTest() {
-        // TODO: Check that the followers and language filter is working.
-        verify(mockRepo).save(tweetCaptor.capture());
-        assertTrue(tweetCaptor.getAllValues().stream()
+        verify(mockRepo, timeout(2000).atLeastOnce()).save(tweetCaptor.capture());
+        tweetCaptor.getAllValues().stream()
         .map(t -> t.getLanguage())
-        .allMatch(s -> Arrays.stream(languages.split(",")).anyMatch(l -> l.equals(s))));
+        .peek(l -> log.info(l))
+        .forEach(l -> assertTrue(languages.contains(l)));
     }
 
 }

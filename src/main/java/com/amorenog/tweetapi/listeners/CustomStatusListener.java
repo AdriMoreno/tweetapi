@@ -1,5 +1,7 @@
 package com.amorenog.tweetapi.listeners;
 
+import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
@@ -14,17 +16,19 @@ public class CustomStatusListener implements StatusListener {
     private static Logger logger = LoggerFactory.getLogger(CustomStatusListener.class);
 
     private int followersThreshold;
+    private Set<String> languages;
 
     private Consumer<Status> statusConsumer;
 
-    public CustomStatusListener(int followersThreshold, Consumer<Status> consumer) {
+    public CustomStatusListener(int followersThreshold, Set<String> languages, Consumer<Status> consumer) {
         this.followersThreshold = followersThreshold;
+        this.languages = languages;
         this.statusConsumer = consumer.andThen(status -> logger.debug("Status with id: " + status.getId() + " saved"));
     }
 
     @Override
     public void onStatus(Status status) {
-        if (status.getUser().getFollowersCount() > followersThreshold) {
+        if (status.getUser().getFollowersCount() > followersThreshold && languages.contains(status.getLang())) {
             logger.info("@" + status.getUser().getScreenName() + " - " + status.getText() + "Lang:"
                     + status.getLang());
                     statusConsumer.accept(status);

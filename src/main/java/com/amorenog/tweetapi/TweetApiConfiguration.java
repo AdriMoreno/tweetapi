@@ -2,6 +2,11 @@ package com.amorenog.tweetapi;
 
 import com.amorenog.tweetapi.listeners.CustomStatusListener;
 import com.amorenog.tweetapi.services.TweetsService;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import com.amorenog.tweetapi.converters.StatusToTweetConverter;
 
 import org.slf4j.Logger;
@@ -46,12 +51,12 @@ public class TweetApiConfiguration {
         cb.setDebugEnabled(true).setOAuthConsumerKey(consumerToken).setOAuthConsumerSecret(consumerSecret)
                 .setOAuthAccessToken(accessToken).setOAuthAccessTokenSecret(accessSecret);
         final TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
-        final StatusListener listener = new CustomStatusListener(followersThreshold,
+        final Set<String> languageSet = new HashSet<String>(Arrays.asList(languages.split(",")));
+        final StatusListener listener = new CustomStatusListener(followersThreshold, languageSet,
                 s -> service.save(converter.convertStatus(s)));
         logger.info("Listener created with threshold: " + followersThreshold);
         twitterStream.addListener(listener);
-        // TODO This is like smelling flowers...
-        twitterStream.filter(new FilterQuery().language(languages.split(",")));
+        logger.info("Listener created with filtered langs: " + Arrays.toString(languages.split(",")));
         twitterStream.sample();
         return twitterStream;
     }

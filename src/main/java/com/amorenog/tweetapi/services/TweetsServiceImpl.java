@@ -2,9 +2,12 @@ package com.amorenog.tweetapi.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.amorenog.tweetapi.models.Tweet;
+import com.amorenog.tweetapi.models.User;
 import com.amorenog.tweetapi.repositories.TweetsRepository;
+import com.amorenog.tweetapi.repositories.UsersRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +23,10 @@ public class TweetsServiceImpl implements TweetsService {
     TwitterStream twitterStream;
 
     @Autowired
-    TweetsRepository repo;
+    TweetsRepository tweetsRepo;
 
+    @Autowired
+    UsersRepository usersRepo;
 
     private static Logger logger = LoggerFactory.getLogger(TweetsServiceImpl.class);
 
@@ -32,7 +37,9 @@ public class TweetsServiceImpl implements TweetsService {
 
     @Override
     public Tweet save(Tweet tweet) {
-        return repo.save(tweet);
+        tweet.setUser(usersRepo.findById(tweet.getUser().getId())
+            .orElse(usersRepo.save(tweet.getUser())));
+        return tweetsRepo.save(tweet);
     }
 
 }

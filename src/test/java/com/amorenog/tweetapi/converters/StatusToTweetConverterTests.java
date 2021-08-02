@@ -44,10 +44,7 @@ public class StatusToTweetConverterTests {
     @BeforeAll
     void setUp(){
         converter = new StatusToTweetConverter();
-        
-
         testGeoLocation = new GeoLocation(testLatitude, testLongitude);
-
     }
     @Test
     void testUserConversion(){

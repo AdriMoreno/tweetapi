@@ -1,19 +1,14 @@
 package com.amorenog.tweetapi.models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.Embeddable;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Embeddable
 @NoArgsConstructor
 @Data
 public class Location {
-    @Id
-    @GeneratedValue
-    private long id;
     private double xCoordinate;
     private double yCoordinate;
     private String type=DEFAULT_LOCATION_TYPE;
